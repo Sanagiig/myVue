@@ -2,10 +2,10 @@
 const webpack = require('webpack');
 
 module.exports = {
-  entry:  "./src/main.js", //已多次提及的唯一入口文件
+  entry: "./src/entry-with-compiler.ts", //已多次提及的唯一入口文件
   output: {
     path: __dirname + "/dist",
-    filename: "bundle.js"
+    filename: "myVue.js"
   },
   devtool: 'cheap-module-source-map',
   devServer: {
@@ -16,14 +16,17 @@ module.exports = {
   },
   module: {
     rules: [{
-      test: /\.(jsx|js)$/,
-      exclude: /(node_modules|bower_components)/,
-      use: {
-        loader: 'babel-loader',
-        options: {
-          presets: ['@babel/preset-env']
+        test: /\.(jsx|js)$/,
+        exclude: /(node_modules|bower_components)/,
+        use: {
+          loader: 'babel-loader',
         }
+      },
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/
       }
-    }]
+    ]
   }
 };
