@@ -1,17 +1,17 @@
 /* @flow */
 
 import config from '../config'
-import { noop } from 'shared/util'
+import { noop } from '../../shared/util'
 
 export let warn = noop
 export let tip = noop
-export let generateComponentTrace = (noop: any) // work around flow check
-export let formatComponentName = (noop: any)
+export let generateComponentTrace = (noop) // work around flow check
+export let formatComponentName = (noop)
 
 if (process.env.NODE_ENV !== 'production') {
   const hasConsole = typeof console !== 'undefined'
   const classifyRE = /(?:^|[-_])(\w)/g
-  const classify = str => str
+  const classify = (str:string) => str
     .replace(classifyRE, c => c.toUpperCase())
     .replace(/[-_]/g, '')
 
@@ -19,7 +19,7 @@ if (process.env.NODE_ENV !== 'production') {
     const trace = vm ? generateComponentTrace(vm) : ''
 
     if (config.warnHandler) {
-      config.warnHandler.call(null, msg, vm, trace)
+      (<any>config.warnHandler).call(null, msg, vm, trace)
     } else if (hasConsole && (!config.silent)) {
       console.error(`[Vue warn]: ${msg}${trace}`)
     }
@@ -55,7 +55,7 @@ if (process.env.NODE_ENV !== 'production') {
     )
   }
 
-  const repeat = (str, n) => {
+  const repeat = (str:string, n:number) => {
     let res = ''
     while (n) {
       if (n % 2 === 1) res += str
@@ -67,7 +67,7 @@ if (process.env.NODE_ENV !== 'production') {
 
   generateComponentTrace = vm => {
     if (vm._isVue && vm.$parent) {
-      const tree = []
+      const tree:Object[] = []
       let currentRecursiveSequence = 0
       while (vm) {
         if (tree.length > 0) {

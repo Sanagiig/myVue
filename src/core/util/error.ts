@@ -3,7 +3,8 @@
 import config from '../config'
 import { warn } from './debug'
 import { inBrowser, inWeex } from './env'
-import { isPromise } from 'shared/util'
+import { isPromise } from '../../shared/util'
+import { Component } from '../../interface/component'
 
 export function handleError (err: Error, vm: any, info: string) {
   if (vm) {
@@ -32,11 +33,11 @@ export function invokeWithErrorHandling (
   vm: any,
   info: string
 ) {
-  let res
+  let res:any
   try {
     res = args ? handler.apply(context, args) : handler.call(context)
     if (isPromise(res)) {
-      res.catch(e => handleError(e, vm, info + ` (Promise/async)`))
+      res.catch((e:Error) => handleError(e, vm, info + ` (Promise/async)`))
     }
   } catch (e) {
     handleError(e, vm, info)
@@ -44,10 +45,10 @@ export function invokeWithErrorHandling (
   return res
 }
 
-function globalHandleError (err, vm, info) {
+function globalHandleError (err:Error, vm:Component, info:string) {
   if (config.errorHandler) {
     try {
-      return config.errorHandler.call(null, err, vm, info)
+      return (<any>config.errorHandler).call(null, err, vm, info)
     } catch (e) {
       logError(e, null, 'config.errorHandler')
     }
@@ -55,7 +56,7 @@ function globalHandleError (err, vm, info) {
   logError(err, vm, info)
 }
 
-function logError (err, vm, info) {
+function logError (err:any, vm:Component | null, info:any) {
   if (process.env.NODE_ENV !== 'production') {
     warn(`Error in ${info}: "${err.toString()}"`, vm)
   }

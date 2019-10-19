@@ -1,15 +1,17 @@
+import {Obj} from './base'
 import {ComponentCtor,Component} from './component'
+import {ASTModifiers} from './compiler'
 import {ComponentOptions} from './options'
 
 export declare type VNodeChildren = Array<VNode | string> | string;
 
 export declare interface VNodeCtor{
   new (
-    tag?: string,
-    data?: VNodeData,
+    tag?: string| void,
+    data?: VNodeData | void,
     children?: Array<VNode>,
     text?: string,
-    elm?: Node,
+    elm?: Node | void,
     context?: Component,
     componentOptions?: VNodeComponentOptions,
     asyncFactory?: Function
@@ -19,15 +21,16 @@ export declare interface VNodeCtor{
 export declare interface VNode {
   tag: string | void;
   data: VNodeData | void;
-  children: Array<VNode>;
-  text: string | void;
+  child:Component | null | void;
+  children?: Array<VNode>;
+  text?: string  ;
   elm: Node | void;
   ns: string | void;
   context: Component | void; // rendered in this component's scope
   key: string | number | void;
   componentOptions: VNodeComponentOptions | void;
   componentInstance: Component | void; // component instance
-  parent: VNode | void; // component placeholder node
+  parent: VNode | void | null; // component placeholder node
 
   // strictly internal
   raw: boolean; // contains raw HTML? (server only)
@@ -37,20 +40,20 @@ export declare interface VNode {
   isCloned: boolean; // is a cloned node?
   isOnce: boolean; // is a v-once node?
   asyncFactory: Function | void; // async component factory function
-  asyncMeta: Object | void;
+  asyncMeta: any | void;
   isAsyncPlaceholder: boolean;
-  ssrContext: Object | void;
+  ssrContext?: Obj | void;
   fnContext: Component | void; // real context vm for functional nodes
-  fnOptions: ComponentOptions; // for SSR caching
-  devtoolsMeta: Object; // used to store functional render context for devtools
-  fnScopeId: string; // functional scope id support
+  fnOptions?: ComponentOptions; // for SSR caching
+  devtoolsMeta?: any; // used to store functional render context for devtools
+  fnScopeId?: string; // functional scope id support
 
 }
 
 export declare type VNodeComponentOptions = {
   Ctor: ComponentCtor;
-  propsData: Object;
-  listeners: Object;
+  propsData: any;
+  listeners: any;
   children: Array<VNode>;
   tag?: string;
 };
@@ -89,15 +92,15 @@ export declare interface VNodeData {
   staticClass?: string;
   class?: any;
   staticStyle?: { [key: string]: any };
-  style?: Array<Object> | Object;
-  normalizedStyle?: Object;
+  style?: Array<any> | any;
+  normalizedStyle?: any;
   props?: { [key: string]: any };
   attrs?: { [key: string]: string };
   domProps?: { [key: string]: any };
   hook?: { [key: string]: Function };
   on?: { [key: string]: Function | Array<Function> };
   nativeOn?: { [key: string]: Function | Array<Function> };
-  transition?: Object;
+  transition?: any;
   show?: boolean; // marker for v-show
   inlineTemplate?: {
     render: Function;
@@ -110,6 +113,7 @@ export declare interface VNodeData {
     value: any;
     callback: Function;
   };
+  moved?:boolean;
 };
 
 export declare type VNodeDirective = {
@@ -119,7 +123,7 @@ export declare type VNodeDirective = {
   oldValue?: any;
   arg?: string;
   modifiers?: ASTModifiers;
-  def?: Object;
+  def?: any;
 };
 
 export declare type ScopedSlotsData = Array<{ key: string, fn: Function }>;

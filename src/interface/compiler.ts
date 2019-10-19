@@ -1,4 +1,4 @@
-declare type CompilerOptions = {
+export declare type CompilerOptions = {
     warn?: Function; // allow customizing warning in different environments; e.g. node
     modules?: Array<ModuleOptions>; // platform specific modules; e.g. style; class
     directives?: { [key: string]: Function }; // platform specific directives
@@ -29,13 +29,13 @@ declare type CompilerOptions = {
     scopeId?: string;
   };
   
-  declare type WarningMessage = {
+export declare type WarningMessage = {
     msg: string;
     start?: number;
     end?: number;
   };
   
-  declare type CompiledResult = {
+export declare type CompiledResult = {
     ast: ASTElement;
     render: string;
     staticRenderFns: Array<string>;
@@ -44,7 +44,7 @@ declare type CompilerOptions = {
     tips?: Array<string | WarningMessage>;
   };
   
-  declare type ModuleOptions = {
+export declare type ModuleOptions = {
     // transform an AST node before any attributes are processed
     // returning an ASTElement from pre/transforms replaces the element
     preTransformNode: (el: ASTElement) => ASTElement;
@@ -58,12 +58,12 @@ declare type CompilerOptions = {
     staticKeys?: Array<string>; // AST properties to be considered static
   };
   
-  declare type ASTModifiers = { [key: string]: boolean };
-  declare type ASTIfCondition = { exp: string; block: ASTElement };
-  declare type ASTIfConditions = Array<ASTIfCondition>;
-  declare type ASTAttr = { name: string; value: any; start?: number; end?: number };
+  export declare type ASTModifiers = { [key: string]: boolean };
+  export declare type ASTIfCondition = { exp: string; block: ASTElement };
+  export declare type ASTIfConditions = Array<ASTIfCondition>;
+  export declare type ASTAttr = { name: string; value: any; start?: number; end?: number };
   
-  declare type ASTElementHandler = {
+  export declare type ASTElementHandler = {
     value: string;
     params?: Array<any>;
     modifiers: ASTModifiers;
@@ -71,11 +71,11 @@ declare type CompilerOptions = {
     end?: number;
   };
   
-  declare type ASTElementHandlers = {
+  export declare type ASTElementHandlers = {
     [key: string]: ASTElementHandler | Array<ASTElementHandler>;
   };
   
-  declare type ASTDirective = {
+  export declare type ASTDirective = {
     name: string;
     rawName: string;
     value: string;
@@ -85,9 +85,9 @@ declare type CompilerOptions = {
     end?: number;
   };
   
-  declare type ASTNode = ASTElement | ASTText | ASTExpression
+  export declare type ASTNode = ASTElement | ASTText | ASTExpression
   
-  declare type ASTElement = {
+  export declare type ASTElement = {
     type: 1;
     tag: string;
     attrsList: Array<ASTAttr>;
@@ -172,7 +172,7 @@ declare type CompilerOptions = {
     has$Slot?: boolean
   };
   
-  declare type ASTExpression = {
+  export declare type ASTExpression = {
     type: 2;
     expression: string;
     text: string;
@@ -186,7 +186,7 @@ declare type CompilerOptions = {
     has$Slot?: boolean
   };
   
-  declare type ASTText = {
+  export declare type ASTText = {
     type: 3;
     text: string;
     static?: boolean;
@@ -202,7 +202,7 @@ declare type CompilerOptions = {
   // SFC-parser related declarations
   
   // an object format describing a single-file component
-  declare type SFCDescriptor = {
+  export declare type SFCDescriptor = {
     template: SFCBlock;
     script: SFCBlock;
     styles: Array<SFCBlock>;
@@ -210,7 +210,7 @@ declare type CompilerOptions = {
     errors: Array<string | WarningMessage>;
   }
   
-  declare type SFCBlock = {
+  export declare type SFCBlock = {
     type: string;
     content: string;
     attrs: {[attribute:string]: string};

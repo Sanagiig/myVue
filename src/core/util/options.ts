@@ -1,5 +1,6 @@
 /* @flow */
 
+import { Component } from '../../interface/component'
 import config from '../config'
 import { warn } from './debug'
 import { set } from '../observer/index'
@@ -9,7 +10,7 @@ import { nativeWatch, hasSymbol } from './env'
 import {
   ASSET_TYPES,
   LIFECYCLE_HOOKS
-} from 'shared/constants'
+} from '../../shared/constants'
 
 import {
   extend,
@@ -19,7 +20,8 @@ import {
   capitalize,
   isBuiltInTag,
   isPlainObject
-} from 'shared/util'
+} from '../../shared/util'
+import { Obj } from '../../interface/base'
 
 /**
  * Option overwriting strategies are functions that handle
@@ -32,7 +34,7 @@ const strats = config.optionMergeStrategies
  * Options with restrictions
  */
 if (process.env.NODE_ENV !== 'production') {
-  strats.el = strats.propsData = function (parent, child, vm, key) {
+  strats.el = strats.propsData = function (parent:any, child:any, vm:any, key:string) {
     if (!vm) {
       warn(
         `option "${key}" can only be used during instance ` +
@@ -46,16 +48,16 @@ if (process.env.NODE_ENV !== 'production') {
 /**
  * Helper that recursively merges two data objects together.
  */
-function mergeData (to: Object, from: ?Object): Object {
+function mergeData (to: any, from: any): Object {
   if (!from) return to
-  let key, toVal, fromVal
+  let key:string | number | symbol, toVal, fromVal
 
   const keys = hasSymbol
     ? Reflect.ownKeys(from)
     : Object.keys(from)
 
   for (let i = 0; i < keys.length; i++) {
-    key = keys[i]
+    key = (<string>keys[i])
     // in case the object is already observed...
     if (key === '__ob__') continue
     toVal = to[key]
@@ -80,7 +82,7 @@ export function mergeDataOrFn (
   parentVal: any,
   childVal: any,
   vm?: Component
-): ?Function {
+): Function {
   if (!vm) {
     // in a Vue.extend merge, both should be functions
     if (!childVal) {
@@ -94,7 +96,7 @@ export function mergeDataOrFn (
     // merged result of both functions... no need to
     // check if parentVal is a function here because
     // it has to be a function to pass previous merges.
-    return function mergedDataFn () {
+    return function mergedDataFn (this:any) {
       return mergeData(
         typeof childVal === 'function' ? childVal.call(this, this) : childVal,
         typeof parentVal === 'function' ? parentVal.call(this, this) : parentVal
@@ -122,7 +124,7 @@ strats.data = function (
   parentVal: any,
   childVal: any,
   vm?: Component
-): ?Function {
+): Function {
   if (!vm) {
     if (childVal && typeof childVal !== 'function') {
       process.env.NODE_ENV !== 'production' && warn(
@@ -144,9 +146,9 @@ strats.data = function (
  * Hooks and props are merged as arrays.
  */
 function mergeHook (
-  parentVal: ?Array<Function>,
-  childVal: ?Function | ?Array<Function>
-): ?Array<Function> {
+  parentVal: Array<Function>,
+  childVal: Function | Array<Function>
+): Array<Function> {
   const res = childVal
     ? parentVal
       ? parentVal.concat(childVal)
@@ -159,7 +161,7 @@ function mergeHook (
     : res
 }
 
-function dedupeHooks (hooks) {
+function dedupeHooks (hooks:any) {
   const res = []
   for (let i = 0; i < hooks.length; i++) {
     if (res.indexOf(hooks[i]) === -1) {
@@ -181,9 +183,9 @@ LIFECYCLE_HOOKS.forEach(hook => {
  * options and parent options.
  */
 function mergeAssets (
-  parentVal: ?Object,
-  childVal: ?Object,
-  vm?: Component,
+  parentVal: any,
+  childVal: any,
+  vm: Component,
   key: string
 ): Object {
   const res = Object.create(parentVal || null)
@@ -206,11 +208,11 @@ ASSET_TYPES.forEach(function (type) {
  * another, so we merge them as arrays.
  */
 strats.watch = function (
-  parentVal: ?Object,
-  childVal: ?Object,
-  vm?: Component,
+  parentVal: any,
+  childVal: any,
+  vm: Component,
   key: string
-): ?Object {
+): any {
   // work around Firefox's Object.prototype.watch...
   if (parentVal === nativeWatch) parentVal = undefined
   if (childVal === nativeWatch) childVal = undefined
@@ -220,7 +222,7 @@ strats.watch = function (
     assertObjectType(key, childVal, vm)
   }
   if (!parentVal) return childVal
-  const ret = {}
+  const ret:any = {}
   extend(ret, parentVal)
   for (const key in childVal) {
     let parent = ret[key]
@@ -242,11 +244,11 @@ strats.props =
 strats.methods =
 strats.inject =
 strats.computed = function (
-  parentVal: ?Object,
-  childVal: ?Object,
-  vm?: Component,
+  parentVal: any,
+  childVal: any,
+  vm: Component,
   key: string
-): ?Object {
+): any {
   if (childVal && process.env.NODE_ENV !== 'production') {
     assertObjectType(key, childVal, vm)
   }
@@ -271,7 +273,7 @@ const defaultStrat = function (parentVal: any, childVal: any): any {
  * Validate component names
  */
 function checkComponents (options: Object) {
-  for (const key in options.components) {
+  for (const key in (<any>options).components) {
     validateComponentName(key)
   }
 }
@@ -295,10 +297,10 @@ export function validateComponentName (name: string) {
  * Ensure all props option syntax are normalized into the
  * Object-based format.
  */
-function normalizeProps (options: Object, vm: ?Component) {
+function normalizeProps (options: any, vm?: Component) {
   const props = options.props
   if (!props) return
-  const res = {}
+  const res:Obj = {}
   let i, val, name
   if (Array.isArray(props)) {
     i = props.length
@@ -332,10 +334,10 @@ function normalizeProps (options: Object, vm: ?Component) {
 /**
  * Normalize all injections into Object-based format
  */
-function normalizeInject (options: Object, vm: ?Component) {
+function normalizeInject (options: any, vm: Component) {
   const inject = options.inject
   if (!inject) return
-  const normalized = options.inject = {}
+  const normalized:any = options.inject = {}
   if (Array.isArray(inject)) {
     for (let i = 0; i < inject.length; i++) {
       normalized[inject[i]] = { from: inject[i] }
@@ -359,7 +361,7 @@ function normalizeInject (options: Object, vm: ?Component) {
 /**
  * Normalize raw function directives into object format.
  */
-function normalizeDirectives (options: Object) {
+function normalizeDirectives (options: any) {
   const dirs = options.directives
   if (dirs) {
     for (const key in dirs) {
@@ -371,7 +373,7 @@ function normalizeDirectives (options: Object) {
   }
 }
 
-function assertObjectType (name: string, value: any, vm: ?Component) {
+function assertObjectType (name: string, value: any, vm: Component) {
   if (!isPlainObject(value)) {
     warn(
       `Invalid value for option "${name}": expected an Object, ` +
@@ -386,10 +388,10 @@ function assertObjectType (name: string, value: any, vm: ?Component) {
  * Core utility used in both instantiation and inheritance.
  */
 export function mergeOptions (
-  parent: Object,
-  child: Object,
+  parent: any,
+  child: any,
   vm?: Component
-): Object {
+): any {
   if (process.env.NODE_ENV !== 'production') {
     checkComponents(child)
   }
@@ -417,7 +419,7 @@ export function mergeOptions (
     }
   }
 
-  const options = {}
+  const options:any = {}
   let key
   for (key in parent) {
     mergeField(key)
@@ -427,7 +429,7 @@ export function mergeOptions (
       mergeField(key)
     }
   }
-  function mergeField (key) {
+  function mergeField (key:string) {
     const strat = strats[key] || defaultStrat
     options[key] = strat(parent[key], child[key], vm, key)
   }
@@ -440,7 +442,7 @@ export function mergeOptions (
  * to assets defined in its ancestor chain.
  */
 export function resolveAsset (
-  options: Object,
+  options: any,
   type: string,
   id: string,
   warnMissing?: boolean

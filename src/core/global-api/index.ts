@@ -1,1 +1,1 @@
-export function initGlobalAPI (Vue) {}
+export function initGlobalAPI (Vue:any) {}

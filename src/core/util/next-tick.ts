@@ -1,11 +1,11 @@
 /* @flow */
 /* globals MutationObserver */
 
-import { noop } from 'shared/util'
+import { noop } from '../../shared/util'
 import { handleError } from './error'
 import { isIE, isIOS, isNative } from './env'
 
-const callbacks = []
+const callbacks:any = []
 let pending = false
 
 function flushCallbacks () {
@@ -28,7 +28,7 @@ function flushCallbacks () {
 // where microtasks have too high a priority and fire in between supposedly
 // sequential events (e.g. #4521, #6690, which have workarounds)
 // or even between bubbling of the same event (#6566).
-let timerFunc
+let timerFunc:any
 
 // The nextTick behavior leverages the microtask queue, which can be accessed
 // via either native Promise.then or MutationObserver.
@@ -81,7 +81,7 @@ if (typeof Promise !== 'undefined' && isNative(Promise)) {
 }
 
 export function nextTick (cb?: Function, ctx?: Object) {
-  let _resolve
+  let _resolve:any
   callbacks.push(() => {
     if (cb) {
       try {

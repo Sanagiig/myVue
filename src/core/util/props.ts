@@ -1,5 +1,4 @@
-/* @flow */
-
+import {Component} from '../../interface/component'
 import { warn } from './debug'
 import { observe, toggleObserving, shouldObserve } from '../observer/index'
 import {
@@ -9,19 +8,19 @@ import {
   hyphenate,
   capitalize,
   isPlainObject
-} from 'shared/util'
+} from '../../shared/util'
 
 type PropOptions = {
   type: Function | Array<Function> | null,
   default: any,
-  required: ?boolean,
-  validator: ?Function
+  required ?: boolean,
+  validator ?: Function
 };
 
 export function validateProp (
   key: string,
-  propOptions: Object,
-  propsData: Object,
+  propOptions: any,
+  propsData: any,
   vm?: Component
 ): any {
   const prop = propOptions[key]
@@ -43,7 +42,7 @@ export function validateProp (
   }
   // check default value
   if (value === undefined) {
-    value = getPropDefaultValue(vm, prop, key)
+    value = getPropDefaultValue(<Component>vm, prop, key)
     // since the default value is a fresh copy,
     // make sure to observe it.
     const prevShouldObserve = shouldObserve
@@ -54,9 +53,10 @@ export function validateProp (
   if (
     process.env.NODE_ENV !== 'production' &&
     // skip validation for weex recycle-list child component props
-    !(__WEEX__ && isObject(value) && ('@binding' in value))
+    // !(__WEEX__ && isObject(value) && ('@binding' in value))
+    !(false && isObject(value) && ('@binding' in value))
   ) {
-    assertProp(prop, key, value, vm, absent)
+    assertProp(prop, key, value, <Component>vm, absent)
   }
   return value
 }
@@ -64,7 +64,7 @@ export function validateProp (
 /**
  * Get the default value of a prop.
  */
-function getPropDefaultValue (vm: ?Component, prop: PropOptions, key: string): any {
+function getPropDefaultValue (vm: Component, prop: PropOptions, key: string): any {
   // no default, return undefined
   if (!hasOwn(prop, 'default')) {
     return undefined
@@ -82,7 +82,7 @@ function getPropDefaultValue (vm: ?Component, prop: PropOptions, key: string): a
   // the raw prop value was also undefined from previous render,
   // return previous default value to avoid unnecessary watcher trigger
   if (vm && vm.$options.propsData &&
-    vm.$options.propsData[key] === undefined &&
+    (<any>vm).$options.propsData[key] === undefined &&
     vm._props[key] !== undefined
   ) {
     return vm._props[key]
@@ -101,7 +101,7 @@ function assertProp (
   prop: PropOptions,
   name: string,
   value: any,
-  vm: ?Component,
+  vm: Component,
   absent: boolean
 ) {
   if (prop.required && absent) {
@@ -114,7 +114,7 @@ function assertProp (
   if (value == null && !prop.required) {
     return
   }
-  let type = prop.type
+  let type:any = prop.type
   let valid = !type || type === true
   const expectedTypes = []
   if (type) {
@@ -179,16 +179,16 @@ function assertType (value: any, type: Function): {
  * because a simple equality check will fail when running
  * across different vms / iframes.
  */
-function getType (fn) {
+function getType (fn:any) {
   const match = fn && fn.toString().match(/^\s*function (\w+)/)
   return match ? match[1] : ''
 }
 
-function isSameType (a, b) {
+function isSameType (a:any, b:any) {
   return getType(a) === getType(b)
 }
 
-function getTypeIndex (type, expectedTypes): number {
+function getTypeIndex (type:any, expectedTypes:any): number {
   if (!Array.isArray(expectedTypes)) {
     return isSameType(expectedTypes, type) ? 0 : -1
   }
@@ -200,7 +200,7 @@ function getTypeIndex (type, expectedTypes): number {
   return -1
 }
 
-function getInvalidTypeMessage (name, value, expectedTypes) {
+function getInvalidTypeMessage (name:string, value:any, expectedTypes:any) {
   let message = `Invalid prop: type check failed for prop "${name}".` +
     ` Expected ${expectedTypes.map(capitalize).join(', ')}`
   const expectedType = expectedTypes[0]
@@ -221,7 +221,7 @@ function getInvalidTypeMessage (name, value, expectedTypes) {
   return message
 }
 
-function styleValue (value, type) {
+function styleValue (value:any, type:any) {
   if (type === 'String') {
     return `"${value}"`
   } else if (type === 'Number') {
@@ -231,11 +231,11 @@ function styleValue (value, type) {
   }
 }
 
-function isExplicable (value) {
+function isExplicable (value:string) {
   const explicitTypes = ['string', 'number', 'boolean']
   return explicitTypes.some(elem => value.toLowerCase() === elem)
 }
 
-function isBoolean (...args) {
-  return args.some(elem => elem.toLowerCase() === 'boolean')
+function isBoolean (...args:any) {
+  return args.some((elem:any) => elem.toLowerCase() === 'boolean')
 }

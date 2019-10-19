@@ -1,23 +1,24 @@
+import {Obj} from './base'
 import {VNodeChildren,VNodeData,ScopedSlotsData} from './vnode'
 import {ComponentOptions} from './options'
 import {Watcher} from './watch'
-import VNode from '../core/vdom/vnode'
+import {VNode} from './vnode'
 
 // 组件构造函数
 export declare interface ComponentCtor {
 // constructor information
    new ():Component
    cid: number;
-   options: Object;
+   options: Obj;
   // extend
-   extend: (options: Object) => Function;
-   superOptions: Object;
-   extendOptions: Object;
-   sealedOptions: Object;
+   extend: (options: Obj) => Function;
+   superOptions: Obj;
+   extendOptions: Obj;
+   sealedOptions: Obj;
    super: ComponentCtor;
   // assets
-   directive: (id: string, def?: Function | Object) => Function | Object | void;
-   component: (id: string, def?: Component | Object) =>Component;
+   directive: (id: string, def?: Function | Obj) => Function | Obj | void;
+   component: (id: string, def?: Component | Obj) =>Component;
    filter: (id: string, def?: Function) => Function | void;
   // functional context constructor
    FunctionalRenderContext: Function;
@@ -25,18 +26,19 @@ export declare interface ComponentCtor {
 
 // 组件实例
 export declare interface Component {
+  constructor:ComponentCtor;
   // public properties
   $el: any; // so that we can attach __vue__ to it
-  $data: Object;
-  $props: Object;
+  $data: Obj;
+  $props: Obj;
   $options: ComponentOptions;
   $parent: Component | void;
   $root: Component;
-  $children: Array<Component>;
+  $children: Component[];
   $refs: { [key: string]: Component | Element | Array<Component | Element> | void };
   $slots: { [key: string]: Array<VNode> };
   $scopedSlots: { [key: string]: () => VNodeChildren };
-  $vnode: VNode; // the placeholder node for the component in parent's render tree
+  $vnode?: VNode | void; // the placeholder node for the component in parent's render tree
   $attrs: { [key: string] : string };
   $listeners: { [key: string]: Function | Array<Function> };
   $isServer: boolean;
@@ -45,15 +47,15 @@ export declare interface Component {
   $mount: (el?: Element | string, hydrating?: boolean) => Component;
   $forceUpdate: () => void;
   $destroy: () => void;
-  $set: <T>(target: Object | Array<T>, key: string | number, val: T) => T;
-  $delete: <T>(target: Object | Array<T>, key: string | number) => void;
-  $watch: (expOrFn: string | Function, cb: Function, options?: Object) => Function;
+  $set: <T>(target: Obj | Array<T>, key: string | number, val: T) => T;
+  $delete: <T>(target: Obj | Array<T>, key: string | number) => void;
+  $watch: (expOrFn: string | Function, cb: Function, options?: Obj) => Function;
   $on: (event: string | Array<string>, fn: Function) => Component;
   $once: (event: string, fn: Function) => Component;
   $off: (event?: string | Array<string>, fn?: Function) => Component;
   $emit: (event: string, ...args: Array<any>) => Component;
   $nextTick: (fn: Function) => void | Promise<any>;
-  $createElement: (tag?: string | Component, data?: Object, children?: VNodeChildren) => VNode;
+  $createElement: (tag?: string | Component, data?: Obj, children?: VNodeChildren,unkonw?:any) => VNode;
 
   // private properties
   _uid: number | string;
@@ -62,21 +64,21 @@ export declare interface Component {
   _self: Component;
   _renderProxy: Component;
   _renderContext: Component;
-  _watcher: Watcher;
+  _watcher: Watcher | null;
   _watchers: Array<Watcher>;
   _computedWatchers: { [key: string]: Watcher };
-  _data: Object;
-  _props: Object;
-  _events: Object;
+  _data: Obj;
+  _props: Obj;
+  _events: Obj;
   _inactive: boolean | null;
   _directInactive: boolean;
   _isMounted: boolean;
   _isDestroyed: boolean;
   _isBeingDestroyed: boolean;
-  _vnode: VNode; // self root node
-  _staticTrees: Array<VNode>; // v-once cached trees
+  _vnode: VNode | null | void; // self root node
+  _staticTrees: Array<VNode> | null; // v-once cached trees
   _hasHookEvent: boolean;
-  _provided: Object;
+  _provided: Obj;
   // _virtualComponents?: { [key: string]: Component };
 
   // private methods
@@ -90,8 +92,8 @@ export declare interface Component {
   _render: () => VNode;
 
   __patch__: (
-    a: Element | VNode | void,
-    b: VNode,
+    a: Element | VNode | void | null,
+    b: VNode | null,
     hydrating?: boolean,
     removeOnly?: boolean,
     parentElm?: any,
@@ -129,7 +131,7 @@ export declare interface Component {
   // renderList
   _l: (val: any, render: Function) => Array<VNode>;
   // renderSlot
-  _t: (name: string, fallback: Array<VNode>, props: Object) => Array<VNode>;
+  _t: (name: string, fallback: Array<VNode>, props: Obj) => Array<VNode>;
   // apply v-bind object
   _b: (data: any, tag: string, value: any, asProp: boolean, isSync?: boolean) => VNodeData;
   // apply v-on object
@@ -137,7 +139,7 @@ export declare interface Component {
   // check custom keyCode
   _k: (eventKeyCode: number, key: string, builtInAlias?: number | Array<number>, eventKeyName?: string) => boolean;
   // resolve scoped slots
-  _u: (scopedSlots: ScopedSlotsData, res?: Object) => { [key: string]: Function };
+  _u: (scopedSlots: ScopedSlotsData, res?: Obj) => { [key: string]: Function };
 
   // SSR specific
   _ssrNode: Function;

@@ -25,6 +25,8 @@ export declare interface Watcher {
     newDeps: Array<Dep>;
     depIds: SimpleSet;
     newDepIds: SimpleSet;
+    update: Function;
+    teardown: Function;
     before: Function;
     getter: Function;
     value: any;

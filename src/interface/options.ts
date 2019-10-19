@@ -1,6 +1,6 @@
-
+import {Obj} from './base'
 import {Component,ComponentCtor} from './component'
-import VNode from '../core/vdom/vnode';
+import {VNode} from './vnode';
 
 export declare type InternalComponentOptions = {
     _isComponent: true;
@@ -16,9 +16,9 @@ export declare type ComponentOptions = {
     componentId?: string;
   
     // data
-    data: Object | Function | void;
+    data: Obj | Function | void;
     props?: { [key: string]: PropOptions };
-    propsData?: Object;
+    propsData?: any;
     computed?: {
       [key: string]: Function | {
         get?: Function;
@@ -77,10 +77,10 @@ export declare type ComponentOptions = {
   
     // private
     _isComponent?: true;
-    _propKeys?: Array<string>;
-    _parentVnode?: VNode;
+    _propKeys?: string[];
+    _parentVnode?: VNode | void;
     _parentListeners?: Object;
-    _renderChildren?: Array<VNode>;
+    _renderChildren?: VNode[];
     _componentTag: string;
     _scopeId: string;
     _base: ComponentCtor;

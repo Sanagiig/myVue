@@ -1,29 +1,28 @@
-/* @flow */
-
+import {ModuleOptions} from '../interface/compiler'
 export const emptyObject = Object.freeze({})
 
 // These helpers produce better VM code in JS engines due to their
 // explicitness and function inlining.
-export function isUndef (v: any): boolean %checks {
+export function isUndef (v: any): boolean {
   return v === undefined || v === null
 }
 
-export function isDef (v: any): boolean %checks {
+export function isDef (v: any): boolean {
   return v !== undefined && v !== null
 }
 
-export function isTrue (v: any): boolean %checks {
+export function isTrue (v: any): boolean {
   return v === true
 }
 
-export function isFalse (v: any): boolean %checks {
+export function isFalse (v: any): boolean {
   return v === false
 }
 
 /**
  * Check if value is primitive.
  */
-export function isPrimitive (value: any): boolean %checks {
+export function isPrimitive (value: any): boolean {
   return (
     typeof value === 'string' ||
     typeof value === 'number' ||
@@ -38,7 +37,7 @@ export function isPrimitive (value: any): boolean %checks {
  * Objects from primitive values when we know the value
  * is a JSON-compliant type.
  */
-export function isObject (obj: mixed): boolean %checks {
+export function isObject (obj: any): boolean {
   return obj !== null && typeof obj === 'object'
 }
 
@@ -143,19 +142,20 @@ export function remove (arr: Array<any>, item: any): Array<any> | void {
  * Check whether an object has the property.
  */
 const hasOwnProperty = Object.prototype.hasOwnProperty
-export function hasOwn (obj: Object | Array<*>, key: string): boolean {
+export function hasOwn (obj: Object | Array<any>, key: string): boolean {
   return hasOwnProperty.call(obj, key)
 }
 
 /**
  * Create a cached version of a pure function.
  */
-export function cached<F: Function> (fn: F): F {
+export function cached<F extends Function> (fn: F): F {
   const cache = Object.create(null)
-  return (function cachedFn (str: string) {
+  const cachedFn:Function = function (str: string): any {
     const hit = cache[str]
     return hit || (cache[str] = fn(str))
-  }: any)
+  }
+  return (<F>cachedFn)
 }
 
 /**
@@ -191,7 +191,7 @@ export const hyphenate = cached((str: string): string => {
 
 /* istanbul ignore next */
 function polyfillBind (fn: Function, ctx: Object): Function {
-  function boundFn (a) {
+  function boundFn (a:any) {
     const l = arguments.length
     return l
       ? l > 1
@@ -228,7 +228,7 @@ export function toArray (list: any, start?: number): Array<any> {
 /**
  * Mix properties into target object.
  */
-export function extend (to: Object, _from: ?Object): Object {
+export function extend (to: {[key:string]:any}, _from: {[key:string]:any}): Object {
   for (const key in _from) {
     to[key] = _from[key]
   }
@@ -255,7 +255,7 @@ export function toObject (arr: Array<any>): Object {
  * Stubbing args to make Flow happy without leaving useless transpiled code
  * with ...rest (https://flow.org/blog/2017/05/07/Strict-Function-Call-Arity/).
  */
-export function noop (a?: any, b?: any, c?: any) {}
+export function noop (a?: any, b?: any, c?: any):any {}
 
 /**
  * Always return false.
@@ -273,7 +273,7 @@ export const identity = (_: any) => _
  * Generate a string containing static keys from compiler modules.
  */
 export function genStaticKeys (modules: Array<ModuleOptions>): string {
-  return modules.reduce((keys, m) => {
+  return modules.reduce((keys, m:any) => {
     return keys.concat(m.staticKeys || [])
   }, []).join(',')
 }
@@ -291,7 +291,7 @@ export function looseEqual (a: any, b: any): boolean {
       const isArrayA = Array.isArray(a)
       const isArrayB = Array.isArray(b)
       if (isArrayA && isArrayB) {
-        return a.length === b.length && a.every((e, i) => {
+        return a.length === b.length && a.every((e:any, i:number) => {
           return looseEqual(e, b[i])
         })
       } else if (a instanceof Date && b instanceof Date) {
@@ -322,7 +322,7 @@ export function looseEqual (a: any, b: any): boolean {
  * found in the array (if value is a plain object, the array must
  * contain an object of the same shape), or -1 if it is not present.
  */
-export function looseIndexOf (arr: Array<mixed>, val: mixed): number {
+export function looseIndexOf (arr: Array<any>, val: any): number {
   for (let i = 0; i < arr.length; i++) {
     if (looseEqual(arr[i], val)) return i
   }
@@ -334,7 +334,7 @@ export function looseIndexOf (arr: Array<mixed>, val: mixed): number {
  */
 export function once (fn: Function): Function {
   let called = false
-  return function () {
+  return function (this:any) {
     if (!called) {
       called = true
       fn.apply(this, arguments)
